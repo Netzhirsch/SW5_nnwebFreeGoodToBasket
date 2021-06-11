@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.2/engine/Shopware/Components/Plugin/schema/config.xsd">
+	<elements>
+		<element type="boolean" scope="shop">
+			<name>nnwebFreeGoodToBasket_insertAllArticles</name>
+			<label lang="de">Alle Gratis-Artikel einfügen:</label>
+			<label>Insert all free articles:</label>
+			<value>false</value>
+			<description lang="de">Befinden sich mehrere Gratis-Artikel in der Promotion, werden alle dem Warenkorb hinzugefügt. Sonst passiert dies nur, wenn nur ein Artikel in der Promotion hinterlegt ist.</description>
+			<description>If there are several free items in the promotion, all will be added to the cart. Otherwise, this only happens if only one article is deposited in the promotion.</description>
+		</element>
+
+		<element type="boolean" scope="shop">
+			<name>nnwebFreeGoodToBasket_showPromotionBox</name>
+			<label lang="de">Zeige "Bitte Gratisartikel wählen"-Box:</label>
+			<label>Show "Please select free articles"-box</label>
+			<value>false</value>
+			<description lang="de">Wenn Gratisartikel verfügbar sind, die nicht automatisch in den Warenkorb gelegt wurden, wird die Promition-Box angezeigt. Dort kann der Kunde den Artikel manuell in den Warenkorb legen.</description>
+			<description>If free items are available that were not automatically added to the shopping cart, the Promition box will be displayed. There the customer can manually add the article to the shopping cart.</description>
+		</element>
+
+		<element type="boolean" scope="shop">
+			<name>nnwebFreeGoodToBasket_deleteIfPromotionIsExpired</name>
+			<label lang="de">Entferne Gratisartikel wieder, wenn Promotion nicht mehr gültig ist:</label>
+			<label>Remove free articles if promotion is expired:</label>
+			<value>false</value>
+			<description lang="de">Wenn diese Option aktiv ist, wird der Gratisartikel aus dem Warenkorb entfernt, sobald eine Promotion nicht mehr gültig ist. Andernfalls bleibt der Artikel im Warenkorb, ist aber nicht mehr gratis.</description>
+			<description>If this option is active, the free item will be removed from the shopping cart as soon as a promotion is no longer valid. Otherwise the item remains in the shopping cart, but is no longer free.</description>
+		</element>
+	</elements>
+</config>

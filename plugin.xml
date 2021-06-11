@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.2/engine/Shopware/Components/Plugin/schema/plugin.xsd">
+    <label lang="de">Gratisartikel automatisch in den Warenkorb</label>
+    <label>Free article automatically add to cart</label>
+
+    <version>1.4.0</version>
+    <copyright>Copyright (c) 2021, Netzhirsch GbR</copyright>
+    <license>proprietary</license>
+    <link>https://www.netzhirsch.de</link>
+    <author>Netzhirsch GbR</author>
+    <compatibility minVersion="5.2.0"/>
+    
+    <description lang="de">Bei der Promotion-Suite werden Gratisartikel automatisch in den Warenkorb gelegt.</description>
+	<description>In the promotion suite items are added to the cart.</description>
+
+    <changelog version="1.0.0">
+        <changes lang="de">Initiale Version</changes>
+        <changes>Initial version</changes>
+    </changelog>
+
+    <changelog version="1.0.1">
+        <changes lang="de">Das Plugin bietet nun auch die Möglichkeit mehrere Gratisartikel automatisch in den Warenkorb zu legen. Dies kann in der Konfigration aktiviert/deaktiviert werden.</changes>
+        <changes>The plugin now also offers the possibility to automatically add several free items to the shopping cart. This can be activated / deactivated in the configuration.</changes>
+    </changelog>
+
+    <changelog version="1.1.0">
+        <changes lang="de">Der Ajax-Warenkorb zeigt nun direkt nach dem Hineinlegen eines Artikels in den Warenkorb auch die hinzugefügten Gratisartikel. Außerdem kann man nun auch Gratis-Artikel wieder aus dem Warenkorb entfernen.</changes>
+        <changes>The Ajax shopping cart now shows the added free items right after putting an item in the shopping cart. In addition, you can now remove free items from the cart.</changes>
+    </changelog>
+
+    <changelog version="1.1.1">
+        <changes lang="de">Fehlerbehebungen die durch das letzte Update entstanden sind.</changes>
+        <changes>Bug fixes caused by the last update.</changes>
+    </changelog>
+
+    <changelog version="1.1.2">
+        <changes lang="de">Fehlerbehebungen die durch das letzte Update entstanden sind.</changes>
+        <changes>Bug fixes caused by the last update.</changes>
+    </changelog>
+
+    <changelog version="1.2.0">
+        <changes lang="de">Aufgrund verschiedener Konstellationen wurden die Events angepasst. Die Gratis-Artikel werden nun genau dann in den Warenkorb gelegt, wenn ein anderer Artikel (der diese Promotion auslöst) in den Warenkorb gelegt oder ein Gutschein eingelöst wird.</changes>
+        <changes>Due to different constellations the events were adapted. The free items will now be added to the cart if another item (which triggers this promotion) is placed in the cart or a voucher is redeemed.</changes>
+    </changelog>
+
+    <changelog version="1.2.1">
+        <changes lang="de">Beim erneuten manuellen Hinzufügen eines Gratisartikel wurde der Artikel zwei mal hinzugefügt. Dies wird nun unterbunden.</changes>
+        <changes>When re-adding a free item manually, the item was added twice. This is now prohibited.</changes>
+    </changelog>
+
+    <changelog version="1.2.2">
+        <changes lang="de"><![CDATA[Die Gratisartikel werden nun erst hinzugefügt, <b>nachdem</b> das Einfügen eines Artikel in den Warenkorb geklappt hat.<br>Außerdem werden Gratisartikel auch eingelöst, wenn sich nur die Anzahl eines Artikels ändert.]]></changes>
+        <changes><![CDATA[The free items will now be added, <b>after</b> inserting an item into the cart has worked out.<br>In addition, free items are also redeemed if only the number of an article changes.]]></changes>
+    </changelog>
+
+    <changelog version="1.2.3">
+        <changes lang="de">Die Funktionalität für das Einlösen von Gutscheinen und dem damit einhergehenden Gratisartikeln wurde optimiert.</changes>
+        <changes>The functionality for redeeming vouchers and the associated free items has been optimized.</changes>
+    </changelog>
+
+    <changelog version="1.2.4">
+        <changes lang="de">Die Funktionalität für das Aktualisieren von Artikeln im Warenkorb und dem damit einhergehenden Gratisartikeln wurde optimiert.</changes>
+        <changes>The functionality for updating items in the shopping cart and the associated free items has been optimized.</changes>
+    </changelog>
+
+    <changelog version="1.2.5">
+        <changes lang="de">Kompatibilität zu Shopware 5.6 hergestellt.</changes>
+        <changes>Compatibility to Shopware 5.6 established.</changes>
+    </changelog>
+
+    <changelog version="1.3.0">
+        <changes lang="de">Promotion-Box kann nun wahlweise angezeigt werden. Die Funktionalität für das Aktualisieren von Artikeln im Warenkorb und dem damit einhergehenden Gratisartikeln wurde optimiert.</changes>
+        <changes>Promotion box can now be displayed optionally. The functionality for updating articles in the shopping cart and the associated free articles has been optimized.</changes>
+    </changelog>
+
+    <changelog version="1.3.1">
+        <changes lang="de">Probleme beim Hinzufügen von Gutscheinen behoben.</changes>
+        <changes>Problems with adding vouchers fixed.</changes>
+    </changelog>
+
+    <changelog version="1.4.0">
+        <changes lang="de">Kompatibilität zu Shopware 5.7 hergestellt. Außerdem kann nun eingestellt werden, dass Gratisartikel auch wieder aus dem Warenkorb entfernt werden, wenn die Promotion-Regeln nicht mehr zutreffen.</changes>
+        <changes>Compatibility with Shopware 5.7 established. In addition, you can now set that free items are also removed from the shopping cart if the promotion rules no longer apply.</changes>
+    </changelog>
+    
+    <requiredPlugins>
+        <requiredPlugin pluginName="SwagPromotion" minVersion="2.0.0" />
+    </requiredPlugins>
+</plugin>
