@@ -15,6 +15,7 @@ use Shopware\Components\Plugin\DBALConfigReader;
 use Shopware\Models\Shop\Shop;
 use Shopware_Controllers_Frontend_Checkout;
 use Zend_Db_Adapter_Exception;
+use Zend_Db_Statement_Exception;
 
 class nnwebFreeGoodToBasket extends Plugin {
 
@@ -22,7 +23,7 @@ class nnwebFreeGoodToBasket extends Plugin {
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatch',
             'Shopware_Modules_Basket_DeleteArticle_Start' => 'onDeletedArticle',
-            'sBasket::sGetBasket::after' => 'afterGetBasket'
+            'Shopware_Modules_Basket_UpdateArticle_Start' => ['onUpdateArticle', 1000000]
         ];
     }
 
@@ -51,70 +52,80 @@ class nnwebFreeGoodToBasket extends Plugin {
 
     /**
      * @param Enlight_Hook_HookArgs $args
+     * @throws Zend_Db_Statement_Exception
      */
-    public function afterGetBasket(Enlight_Hook_HookArgs $args)
+    public function onUpdateArticle(Enlight_Event_EventArgs $args)
     {
+        $db = Shopware()->Db();
+
         $config = $this->getConfig();
         if (!$config["nnwebFreeGoodToBasket_deleteIfPromotionIsExpired"])
             return;
 
-        $basket = $args->getReturn();
+        $basketId = $args->get('id');
+        if (empty($basketId))
+            return;
 
-        $session = Shopware()->Session();
-        if (!empty($basket)) {
+        $sql = 'SELECT b.ordernumber, ba.swag_is_free_good_by_promotion_id
+                FROM s_order_basket b
+                LEFT JOIN s_order_basket_attributes ba ON b.id = ba.basketID 
+                WHERE b.id = :basketId;';
+        $result = $db->executeQuery($sql, ['basketId' => $basketId])->fetch();
+
+        if (!empty($result) && !empty($result["ordernumber"])) {
+            $session = Shopware()->Session();
             $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->get('netzhirschFreeGoodToBasketFreedGoodsAdded');
-            foreach ($basket["content"] as $basketKey => $basketItem) {
-                if (in_array($basketItem['ordernumber'], $netzhirschFreeGoodToBasketFreedGoodsAdded) && empty($basketItem["isFreeGoodByPromotionId"])) {
-                    unset($basket["content"][$basketKey]);
+            if (in_array($result["ordernumber"], $netzhirschFreeGoodToBasketFreedGoodsAdded) && empty($result["swag_is_free_good_by_promotion_id"])) {
+                $db->delete(
+                    's_order_basket',
+                    [
+                        'sessionID = ?' => $session->get('sessionId'),
+                        'id = ?' => (int) $basketId,
+                    ]
+                );
+
+                if (($key = array_search($result["ordernumber"], $netzhirschFreeGoodToBasketFreedGoodsAdded)) !== false) {
+                    unset($netzhirschFreeGoodToBasketFreedGoodsAdded[$key]);
+                    Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsAdded',$netzhirschFreeGoodToBasketFreedGoodsAdded);
                 }
+
             }
         }
 
-        $args->setReturn($basket);
     }
 
     /**
      * @param Enlight_Event_EventArgs $args
-     * @throws Enlight_Event_Exception
-     * @throws Enlight_Exception
-     * @throws Zend_Db_Adapter_Exception
+     * @throws Zend_Db_Statement_Exception
      */
     public function onDeletedArticle(Enlight_Event_EventArgs $args)
     {
-        $id = $args->get('id');
-        if ($id == 'voucher')
+        $db = Shopware()->Db();
+
+        $basketId = $args->get('id');
+        if ($basketId == 'voucher')
             return;
 
-        $basket = Shopware()->Modules()->Basket();
-        $basketData = $basket->sGetBasket();
+        if (empty($basketId))
+            return;
 
-        $orderNumber = null;
-        $session = Shopware()->Session();
-        if (!empty($basketData)) {
-            $freeGoods = $this->getFreedGoods($basketData,$session);
-            $content = $basketData['content'];
-            if (!empty($content)) {
-                foreach ($content as $basketArticle) {
-                    if ($basketArticle['id'] == $id) {
-                        foreach ($freeGoods as $freeGood) {
-                            if ($freeGood['ordernumber'] == $basketArticle['ordernumber'] && !empty($basketArticle['isFreeGoodByPromotionId']))
-                                $orderNumber = $basketArticle['ordernumber'];
-                        }
-                        if (!empty($basketArticle['isFreeGoodByPromotionId']))
-                            $orderNumber = $basketArticle['ordernumber'];
-                    }
-                }
+        $sql = 'SELECT b.ordernumber, ba.swag_is_free_good_by_promotion_id
+                FROM s_order_basket b
+                LEFT JOIN s_order_basket_attributes ba ON b.id = ba.basketID 
+                WHERE b.id = :basketId;';
+        $result = $db->executeQuery($sql, ['basketId' => $basketId])->fetch();
+
+        if (!empty($result) && !empty($result["ordernumber"])) {
+            $session = Shopware()->Session();
+            $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->get('netzhirschFreeGoodToBasketFreedGoodsDeleted');
+            if (!in_array($result["orderNumber"],$netzhirschFreeGoodToBasketFreedGoodsDeleted) && !empty($result["swag_is_free_good_by_promotion_id"])) {
+                $netzhirschFreeGoodToBasketFreedGoodsDeleted[] = $result["orderNumber"];
+                Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsDeleted',$netzhirschFreeGoodToBasketFreedGoodsDeleted);
             }
-        }
-        $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->get('netzhirschFreeGoodToBasketFreedGoodsDeleted');
-        if (!empty($orderNumber) && !in_array($orderNumber,$netzhirschFreeGoodToBasketFreedGoodsDeleted)) {
-            $netzhirschFreeGoodToBasketFreedGoodsDeleted[] = $orderNumber;
-            Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsDeleted',$netzhirschFreeGoodToBasketFreedGoodsDeleted);
         }
     }
 
     private function disablePromotionBox(Shopware_Controllers_Frontend_Checkout $controller){
-        /** @var Enlight_View_Default $view */
         $view = $controller->View();
         $config = $this->getConfig();
         if (isset($config['nnwebFreeGoodToBasket_showPromotionBox']) && !$config['nnwebFreeGoodToBasket_showPromotionBox']) {
