@@ -6,12 +6,9 @@ use Enlight_Event_EventArgs;
 use Enlight_Event_Exception;
 use Enlight_Exception;
 use Enlight_Hook_HookArgs;
-use Enlight_View_Default;
 use Exception;
-use Shopware\Components\Cart\Struct\CartItemStruct;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
-use Shopware\Components\Plugin\DBALConfigReader;
 use Shopware\Models\Shop\Shop;
 use Shopware_Controllers_Frontend_Checkout;
 use Zend_Db_Adapter_Exception;
@@ -43,11 +40,13 @@ class nnwebFreeGoodToBasket extends Plugin {
 
         /** @var Shopware_Controllers_Frontend_Checkout $controller */
         $controller = $args->get('subject');
+        $request = $controller->Request();
 
         $this->disablePromotionBox($controller);
-
         $this->addPromotionFreeGoods();
 
+        if (str_contains($request->getPathInfo(), 'addVoucher'))
+            $controller->redirect(['controller' => 'checkout', 'action' => $request->getActionName()]);
     }
 
     /**
@@ -140,7 +139,6 @@ class nnwebFreeGoodToBasket extends Plugin {
      */
     public function addPromotionFreeGoods()
     {
-
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         if (empty($basket))
             return;
@@ -148,9 +146,8 @@ class nnwebFreeGoodToBasket extends Plugin {
         $session = Shopware()->Session();
         $freeGoods = $this->getFreedGoods($basket,$session);
         if (empty($freeGoods)) {
-           return;
+            return;
         }
-
         $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->get('netzhirschFreeGoodToBasketFreedGoodsDeleted');
         $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->get('netzhirschFreeGoodToBasketFreedGoodsAdded');
 
@@ -198,6 +195,7 @@ class nnwebFreeGoodToBasket extends Plugin {
 
         $productService = Shopware()->Container()->get('swag_promotion.service.article_service');
         $freeGoods = [];
+
         foreach ($appliedPromotions->freeGoodsArticlesIds as $promotionId => $freeGoodsArticles) {
             $articlesData = $productService->getFreeGoods($freeGoodsArticles, $promotionId);
             if (empty($freeGoods)) {
@@ -206,6 +204,7 @@ class nnwebFreeGoodToBasket extends Plugin {
                 $freeGoods = array_merge($freeGoods, $articlesData);
             }
         }
+
         return $freeGoods;
     }
 

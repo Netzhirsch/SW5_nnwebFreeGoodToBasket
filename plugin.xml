@@ -3,7 +3,7 @@
     <label lang="de">Gratisartikel automatisch in den Warenkorb</label>
     <label>Free article automatically add to cart</label>
 
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <copyright>Copyright (c) 2021, Netzhirsch GbR</copyright>
     <license>proprietary</license>
     <link>https://www.netzhirsch.de</link>
@@ -86,6 +86,11 @@
     <changelog version="1.4.1">
         <changes lang="de">Beim Entfernen der Gratisartikel aus dem Warenkorb wird nun auch der Warenkorb global aktualisiert.</changes>
         <changes>When removing the free items from the shopping cart, the shopping cart is now also updated globally.</changes>
+    </changelog>
+
+    <changelog version="1.4.2">
+        <changes lang="de">Redirect nach dem Einlösen eines Gutscheins, damit der Badge-Text im Warenkorb angezeigt wird.</changes>
+        <changes>Redirect after redeeming a voucher so that the badge text is displayed in the shopping cart.</changes>
     </changelog>
     
     <requiredPlugins>
