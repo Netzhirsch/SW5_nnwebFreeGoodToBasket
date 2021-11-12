@@ -45,7 +45,7 @@ class nnwebFreeGoodToBasket extends Plugin {
         $this->disablePromotionBox($controller);
         $this->addPromotionFreeGoods();
 
-        if (str_contains($request->getPathInfo(), 'addVoucher'))
+        if (strpos($request->getPathInfo(), 'addVoucher') !== false)
             $controller->redirect(['controller' => 'checkout', 'action' => $request->getActionName()]);
     }
 
