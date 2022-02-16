@@ -43,9 +43,9 @@ class nnwebFreeGoodToBasket extends Plugin {
         $request = $controller->Request();
 
         $this->disablePromotionBox($controller);
-        $this->addPromotionFreeGoods();
+        $articleAdded = $this->addPromotionFreeGoods();
 
-        if (strpos($request->getPathInfo(), 'addVoucher') !== false)
+        if ($articleAdded && strpos($request->getPathInfo(), 'addVoucher') !== false)
             $controller->redirect(['controller' => 'checkout', 'action' => $request->getActionName()]);
     }
 
@@ -73,19 +73,19 @@ class nnwebFreeGoodToBasket extends Plugin {
 
         if (!empty($result) && !empty($result["ordernumber"])) {
             $session = Shopware()->Session();
-            $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->get('netzhirschFreeGoodToBasketFreedGoodsAdded');
+            $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsAdded');
             if (in_array($result["ordernumber"], $netzhirschFreeGoodToBasketFreedGoodsAdded) && empty($result["swag_is_free_good_by_promotion_id"])) {
                 $db->delete(
                     's_order_basket',
                     [
-                        'sessionID = ?' => $session->get('sessionId'),
+                        'sessionID = ?' => $session->offsetGet('sessionId'),
                         'id = ?' => (int) $basketId,
                     ]
                 );
 
                 if (($key = array_search($result["ordernumber"], $netzhirschFreeGoodToBasketFreedGoodsAdded)) !== false) {
                     unset($netzhirschFreeGoodToBasketFreedGoodsAdded[$key]);
-                    Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsAdded',$netzhirschFreeGoodToBasketFreedGoodsAdded);
+                    $session->offsetSet('netzhirschFreeGoodToBasketFreedGoodsAdded',$netzhirschFreeGoodToBasketFreedGoodsAdded);
                 }
 
             }
@@ -116,7 +116,7 @@ class nnwebFreeGoodToBasket extends Plugin {
 
         if (!empty($result) && !empty($result["ordernumber"])) {
             $session = Shopware()->Session();
-            $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->get('netzhirschFreeGoodToBasketFreedGoodsDeleted');
+            $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsDeleted');
             if (!in_array($result["orderNumber"],$netzhirschFreeGoodToBasketFreedGoodsDeleted) && !empty($result["swag_is_free_good_by_promotion_id"])) {
                 $netzhirschFreeGoodToBasketFreedGoodsDeleted[] = $result["orderNumber"];
                 Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsDeleted',$netzhirschFreeGoodToBasketFreedGoodsDeleted);
@@ -139,17 +139,19 @@ class nnwebFreeGoodToBasket extends Plugin {
      */
     public function addPromotionFreeGoods()
     {
+		$articleAdded = false;
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         if (empty($basket))
             return;
 
         $session = Shopware()->Session();
         $freeGoods = $this->getFreedGoods($basket,$session);
+
         if (empty($freeGoods)) {
             return;
         }
-        $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->get('netzhirschFreeGoodToBasketFreedGoodsDeleted');
-        $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->get('netzhirschFreeGoodToBasketFreedGoodsAdded');
+        $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsDeleted');
+        $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsAdded');
 
         $config = $this->getConfig();
         if (count($freeGoods) == 1 || $config["nnwebFreeGoodToBasket_insertAllArticles"]) {
@@ -173,11 +175,13 @@ class nnwebFreeGoodToBasket extends Plugin {
                     Shopware()->Container()
                         ->get('swag_promotion.service.free_goods_service')
                             ->addArticleAsFreeGood($orderNumber, $promotionId);
+					$articleAdded = true;
                 }
             }
         }
 
-        Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsAdded',$netzhirschFreeGoodToBasketFreedGoodsAdded);
+        $session->offsetSet('netzhirschFreeGoodToBasketFreedGoodsAdded',$netzhirschFreeGoodToBasketFreedGoodsAdded);
+		return $articleAdded;
     }
 
     private function getFreedGoods($basket,$session)
@@ -188,9 +192,9 @@ class nnwebFreeGoodToBasket extends Plugin {
         $appliedPromotions = $promotionSelector->apply(
             $basket,
             $contextService->getShopContext()->getCurrentCustomerGroup()->getId(),
-            $session->get('sUserId'),
+            $session->offsetGet('sUserId'),
             $contextService->getShopContext()->getShop()->getId(),
-            array_keys($session->get('promotionVouchers')) ?: []
+            array_keys($session->offsetGet('promotionVouchers')) ?: []
         );
 
         $productService = Shopware()->Container()->get('swag_promotion.service.article_service');

@@ -3,11 +3,11 @@
     <label lang="de">Gratisartikel automatisch in den Warenkorb</label>
     <label>Free article automatically add to cart</label>
 
-    <version>1.4.3</version>
-    <copyright>Copyright (c) 2021, Netzhirsch GbR</copyright>
+    <version>1.5.0</version>
+    <copyright>Copyright (c) 2022, Netzhirsch GmbH</copyright>
     <license>proprietary</license>
     <link>https://www.netzhirsch.de</link>
-    <author>Netzhirsch GbR</author>
+    <author>Netzhirsch GmbH</author>
     <compatibility minVersion="5.2.0"/>
     
     <description lang="de">Bei der Promotion-Suite werden Gratisartikel automatisch in den Warenkorb gelegt.</description>
@@ -96,6 +96,11 @@
     <changelog version="1.4.3">
         <changes lang="de">Fehlerbehebung bezüglich einer Kompatibilität mit PHP 8.</changes>
         <changes>Bug fix regarding compatibility with PHP 8.</changes>
+    </changelog>
+
+    <changelog version="1.5.0">
+        <changes lang="de">Redirect im Warenkorb nur bei erfolgreicher Einlösung, da sonst Hinweistexte unter bestimmten Umständen nicht ausgegeben werden.</changes>
+        <changes>Redirect in the shopping cart only if redeemed is successfully, otherwise information texts are not output under certain circumstances.</changes>
     </changelog>
     
     <requiredPlugins>
