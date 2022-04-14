@@ -74,6 +74,8 @@ class nnwebFreeGoodToBasket extends Plugin {
         if (!empty($result) && !empty($result["ordernumber"])) {
             $session = Shopware()->Session();
             $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsAdded');
+			if (empty($netzhirschFreeGoodToBasketFreedGoodsAdded))
+				$netzhirschFreeGoodToBasketFreedGoodsAdded = [];
             if (in_array($result["ordernumber"], $netzhirschFreeGoodToBasketFreedGoodsAdded) && empty($result["swag_is_free_good_by_promotion_id"])) {
                 $db->delete(
                     's_order_basket',
@@ -117,6 +119,8 @@ class nnwebFreeGoodToBasket extends Plugin {
         if (!empty($result) && !empty($result["ordernumber"])) {
             $session = Shopware()->Session();
             $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsDeleted');
+	        if (empty($netzhirschFreeGoodToBasketFreedGoodsDeleted))
+		        $netzhirschFreeGoodToBasketFreedGoodsDeleted = [];
             if (!in_array($result["orderNumber"],$netzhirschFreeGoodToBasketFreedGoodsDeleted) && !empty($result["swag_is_free_good_by_promotion_id"])) {
                 $netzhirschFreeGoodToBasketFreedGoodsDeleted[] = $result["orderNumber"];
                 Shopware()->Session()->offsetSet('netzhirschFreeGoodToBasketFreedGoodsDeleted',$netzhirschFreeGoodToBasketFreedGoodsDeleted);
@@ -151,7 +155,11 @@ class nnwebFreeGoodToBasket extends Plugin {
             return;
         }
         $netzhirschFreeGoodToBasketFreedGoodsDeleted = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsDeleted');
+	    if (empty($netzhirschFreeGoodToBasketFreedGoodsDeleted))
+		    $netzhirschFreeGoodToBasketFreedGoodsDeleted = [];
         $netzhirschFreeGoodToBasketFreedGoodsAdded = $session->offsetGet('netzhirschFreeGoodToBasketFreedGoodsAdded');
+	    if (empty($netzhirschFreeGoodToBasketFreedGoodsAdded))
+		    $netzhirschFreeGoodToBasketFreedGoodsAdded = [];
 
         $config = $this->getConfig();
         if (count($freeGoods) == 1 || $config["nnwebFreeGoodToBasket_insertAllArticles"]) {
