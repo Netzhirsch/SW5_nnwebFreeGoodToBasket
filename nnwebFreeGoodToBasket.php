@@ -197,12 +197,16 @@ class nnwebFreeGoodToBasket extends Plugin {
         $promotionSelector = Shopware()->Container()->get('swag_promotion.promotion_selector');
         $contextService = Shopware()->Container()->get('shopware_storefront.context_service');
 
+		$promotionVouchers = $session->offsetGet('promotionVouchers');
+		if (empty($promotionVouchers))
+		    $promotionVouchers = [];
+		
         $appliedPromotions = $promotionSelector->apply(
             $basket,
             $contextService->getShopContext()->getCurrentCustomerGroup()->getId(),
             $session->offsetGet('sUserId'),
             $contextService->getShopContext()->getShop()->getId(),
-            array_keys($session->offsetGet('promotionVouchers')) ?: []
+            array_keys($promotionVouchers) ?: []
         );
 
         $productService = Shopware()->Container()->get('swag_promotion.service.article_service');
